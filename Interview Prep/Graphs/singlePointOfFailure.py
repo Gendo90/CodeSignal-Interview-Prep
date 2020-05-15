@@ -1,3 +1,42 @@
+#Problem required O(n^2) time for the solution, where n is the number of nodes
+#Problem outline is to find "single points of failure" in a LAN computer
+#network, so that the admin can plan new additions to the network to make it
+#more robust. That translates into finding which single cables (edges) can
+#be disconnected and cause the entire network to be disconnected.
+
+#This looks a lot like the strongly-connected components problem, in that
+#we are trying to figure out how many "clusters" of computers there are that
+#are connected by a single cable. We are given an adjacency matrix for the
+#connections and are assured the graph is connected.
+
+#My solution (that should work in O(n^2) time) entails first removing computers
+#that only have one connection to the network - one cable (edge). After
+#removing these computers, we can look at each separate computer in the
+#network and disconnect it from all others temporarily. Then we use a BFS
+#to determine if the network is disconnected. If so, at least one of the cables
+#(edges) attached to that computer could be a single point of failure. We find
+#all the possible "problem" computers, then check how they are connected to
+#each other to determine how many valid single points of failure there are.
+
+#This part gets a little tricky. The computers causing a single point of failure
+#are attached at two ends - that is, if one computer is disconnected on either
+#end of the cable, then there will be a failure. So each computer is examined
+#to see if it connects to another problem computer, and then if so, the failure
+#point is counted once. If there is a bypass cable (e.g. both computers are
+#connected to a third computer, so there is no failure if either is
+#disconnected from the other, but they occur at a network bottleneck meaning
+#that all cables from a computer being disconnected would result in a failure),
+#we account for that case by checking if the problem computers are connected
+#to a third computer, which would eliminate the problem of the single point
+#of failure but is a corner case since we looked at which computers cause
+#problems when all cables are disconnected from them.
+
+#The resulting algorithm should take O(n^2) because we look at each computer
+#once when it is disconnected and then do a BFS to check connectivity, which
+#takes linear time. So n computers times with n search time each yields
+#O(n^2). Usually can't do much better than that with an adjacency matrix,
+#anyway!
+
 def singlePointOfFailure(connections):
     size = len(connections)
     total = 0
